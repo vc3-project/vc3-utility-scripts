@@ -1,12 +1,10 @@
 #!/bin/bash
 
 # Simple script to build htcondor from docker images
-set -x
-
 #####################
 # Parameters:
 #####################
-# To edit:
+# To edit (when used interactively rather than through travis):
 condor_branch="V8_6_3-branch"
 condor_version="8.6.3"
 
@@ -28,21 +26,23 @@ case "$1" in
       ;;
 esac
 
-# Tarball filename
-release_name="condor-${condor_version}-x86_64_${osver}-stripped"
-
-# Cleaning
-if [ -d htcondor_${osver} ]; then
-    rm -rf htcondor_${osver}
+# Tarball filename and htcondor git setup.
+if [ "$TRAVIS" == "true" ] && [ "x$TRAVIS_TAG" != "x" ]; then
+    release_name="condor-${condor_version}-x86_64_${osver}-stripped"
+    BINARY_DIR=$PWD
+else
+    release_name="condor-${TRAVIS_TAG}-x86_64_${osver}-stripped"
+    # Cleaning
+    if [ -d htcondor_${osver} ]; then
+        rm -rf htcondor_${osver}
+    fi
+    mkdir htcondor_${osver}; cd htcondor_${osver}
+    BINARY_DIR=$PWD
+    # Clone repository
+    git clone "$git_repo"
+    cd vc3-htcondor
+    git checkout $condor_branch
 fi
-
-mkdir htcondor_${osver}; cd htcondor_${osver}
-BINARY_DIR=$PWD
-
-# Clone repository
-git clone "$git_repo"
-cd htcondor
-git checkout $condor_branch
 
 # Compile through docker
 run_docker="docker run -u $UID:$UID -v $(pwd):$PWD -w $PWD ${docker_hub}:${docker_tag}"
@@ -69,5 +69,5 @@ tar czf $release_name.tar.gz --owner=0 --group=0 --numeric-owner $release_name
 mv $release_name.tar.gz $BINARY_DIR
 
 # Delete source code
-echo rm -rf $BINARY_DIR/htcondor
-# rm -rf $BINARY_DIR/htcondor
+# echo rm -rf $BINARY_DIR/vc3-htcondor
+#rm -rf $BINARY_DIR/vc3-htcondor
