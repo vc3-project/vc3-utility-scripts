@@ -46,7 +46,7 @@ fi
 
 # Compile through docker
 run_docker="docker run -u $UID:$UID -v $(pwd):$PWD -w $PWD ${docker_hub}:${docker_tag}"
-$run_docker ./configure_uw -D_DEBUG:BOOL=FALSE -DWANT_MAN_PAGES:BOOL=TRUE -DWANT_FULL_DEPLOYMENT:BOOL=ON -DCONDOR_STRIP_PACKAGES:BOOL=ON
+$run_docker ./configure_uw -D_DEBUG:BOOL=FALSE -DWANT_MAN_PAGES:BOOL=TRUE -DWANT_FULL_DEPLOYMENT:BOOL=ON -DCONDOR_STRIP_PACKAGES:BOOL=ON -D_VERBOSE:BOOL=FALSE
 $run_docker make
 $run_docker make install
 
