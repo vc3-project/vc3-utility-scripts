@@ -28,10 +28,10 @@ esac
 
 # Tarball filename and htcondor git setup.
 if [ "$TRAVIS" == "true" ] && [ "x$TRAVIS_TAG" != "x" ]; then
-    release_name="condor-${condor_version}-x86_64_${osver}-stripped"
+    release_name="condor-${TRAVIS_TAG}-x86_64_${osver}-stripped"
     BINARY_DIR=$PWD
 else
-    release_name="condor-${TRAVIS_TAG}-x86_64_${osver}-stripped"
+    release_name="condor-${condor_version}-x86_64_${osver}-stripped"
     # Cleaning
     if [ -d htcondor_${osver} ]; then
         rm -rf htcondor_${osver}
